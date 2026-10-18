@@ -3,25 +3,21 @@ import pandas as pd
 from datetime import datetime
 import os
 from docx import Document
-from docx.shared import Inches, Pt, RGBColor
+from docx.shared import Inches, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import parse_xml, OxmlElement
 from docx.oxml.ns import nsdecls, qn
 
-# --- KONFIGURASI HALAMAN ---
 st.set_page_config(
     page_title="SKP & Eviden - Serang Gawe FM",
     page_icon="🎙️",
     layout="wide"
 )
 
-# --- TAMPILAN KUSTOM (TEMA BIRU SERANG GAWE FM) ---
 st.markdown("""
     <style>
-    .stApp {
-        background-color: #f4f7fc;
-    }
+    .stApp { background-color: #f4f7fc; }
     .main-header {
         background-color: #0d47a1;
         color: white;
@@ -40,14 +36,10 @@ st.markdown("""
         border: none;
         width: 100%;
     }
-    .stButton>button:hover {
-        background-color: #0d47a1;
-        color: white;
-    }
+    .stButton>button:hover { background-color: #0d47a1; color: white; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER APLIKASI ---
 st.markdown("""
     <div class="main-header">
         <h1>🎙️ PORTAL EVIDEN SKP - SERANG GAWE FM</h1>
@@ -55,11 +47,9 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Folder utama penyimpanan
 if not os.path.exists("data_pegawai"):
     os.makedirs("data_pegawai")
 
-# --- IDENTITAS PENGGUNA DI SIDEBAR ---
 st.sidebar.markdown("### 👤 Identitas Pengguna")
 nama_pegawai_input = st.sidebar.text_input("Masukkan Nama Anda:", value="NADIYYATUL FIZRIYA")
 nip_pegawai_input = st.sidebar.text_input("Masukkan NIP / ID:", value="200112222025212026")
@@ -79,7 +69,6 @@ if os.path.exists(DATA_FILE):
 else:
     df_data = pd.DataFrame(columns=["Kategori", "Tanggal", "Waktu", "Program", "Narasumber", "Tema", "Foto_Path"])
 
-# --- HELPER FUNCTION: BORDER TABEL ---
 def set_cell_border(cell, **kwargs):
     tc = cell._tc
     tcPr = tc.get_or_add_tcPr()
@@ -114,14 +103,11 @@ def set_table_borders(table):
     )
     tblPr.append(borders)
 
-# --- MENU TAB ---
 tab1, tab2, tab3 = st.tabs(["📝 Input Eviden Harian", "📊 Rekap Data Bulanan", "📄 Generate Laporan SKP"])
 
-# --- TAB 1: FORM INPUT ---
 with tab1:
     st.subheader(f"📌 Form Input Kegiatan Harian: {nama_pegawai_input.upper()}")
     
-    # Pilih jenis input: Talkshow Biasa atau OBRAS
     jenis_kegiatan = st.radio("Pilih Jenis Kegiatan Siaran:", ["Talkshow / Siaran Umum (Pakai Narasumber)", "Program OBRAS (Materi / Informasi Harian)"])
     
     with st.form("form_eviden", clear_on_submit=True):
@@ -144,7 +130,7 @@ with tab1:
                 program = "OBRAS (Obrolan Siang)"
             with col2:
                 narasumber = "-"
-                tema = st.text_area("Materi / Topik Berita Harian", placeholder="Contoh: Informasi Cuaca & Tips Kesehatan Kulit di Musim Panas")
+                tema = st.text_area("Materi / Topik Berita Harian", placeholder="Contoh: Informasi Cuaca & Tips Kesehatan")
         
         uploaded_file = st.file_uploader("Upload Foto Dokumentasi/Evidence (PNG/JPG)", type=["jpg", "jpeg", "png"])
         
@@ -172,7 +158,6 @@ with tab1:
             else:
                 st.error("⚠️ Harap upload foto bukti dokumentasi!")
 
-# --- TAB 2: REKAP DATA ---
 with tab2:
     st.subheader(f"📋 Rekapitulasi Data: {nama_pegawai_input.upper()}")
     if not df_data.empty:
@@ -180,7 +165,6 @@ with tab2:
     else:
         st.info("Belum ada data yang diinputkan.")
 
-# --- TAB 3: GENERATE LAPORAN DOCX ---
 with tab3:
     st.subheader("🖨️ Cetak Laporan Bulanan (Format Terpisah Talkshow & OBRAS)")
     
@@ -190,10 +174,8 @@ with tab3:
         if not df_data.empty:
             doc = Document()
             
-            # --- HALAMAN 1: SAMPUL ---
             p_cover = doc.add_paragraph()
             p_cover.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            
             run1 = p_cover.add_run("LAMPIRAN\nSKP BULAN " + bulan_tahun.upper() + "\n\n\n\n\n\n")
             run1.font.size = Pt(16)
             run1.font.bold = True
@@ -207,7 +189,6 @@ with tab3:
             
             doc.add_page_break()
             
-            # --- BAGIAN 1: DOKUMENTASI TALKSHOW ---
             df_talkshow = df_data[df_data["Kategori"] == "TALKSHOW"]
             if not df_talkshow.empty:
                 p_head = doc.add_paragraph()
@@ -248,7 +229,6 @@ with tab3:
                 
                 doc.add_page_break()
             
-            # --- BAGIAN 2: DOKUMENTASI KHUSUS OBRAS ---
             df_obras = df_data[df_data["Kategori"] == "OBRAS"]
             if not df_obras.empty:
                 p_head_obras = doc.add_paragraph()
@@ -289,7 +269,6 @@ with tab3:
                 
                 doc.add_page_break()
             
-            # --- BAGIAN 3: TABEL REKAPITULASI GABUNGAN/TANGGAL ---
             doc.add_heading(f"REKAPITULASI KEGIATAN SIARAN", level=2)
             
             skp_table = doc.add_table(rows=1, cols=5)
