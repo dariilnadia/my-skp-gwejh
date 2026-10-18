@@ -11,6 +11,7 @@ from docx.oxml.ns import nsdecls, qn
 
 st.set_page_config(page_title="SKP & Eviden - Serang Gawe FM", page_icon="🎙️", layout="wide")
 
+# CSS PAKSA WARNA TAB JADI BIRU JELAS
 st.markdown("""
     <style>
     .stApp { background-color: #f4f7fc; }
@@ -26,10 +27,10 @@ st.markdown("""
     .stButton>button:hover { background-color: #0d47a1; color: white; }
     h3 { color: #0d47a1 !important; }
     
-    /* MEMBUAT TEKS MENU TAB JELAS & BERWARNA BIRU */
-    .stTabs [data-baseweb="tab"] p {
+    /* PAKSA SEMUA TEKS DALAM TAB JADI BIRU TUA & TEBAL */
+    button[data-baseweb="tab"] div p {
         color: #0d47a1 !important;
-        font-weight: bold !important;
+        font-weight: 700 !important;
         font-size: 16px !important;
     }
     </style>
@@ -256,4 +257,4 @@ with tab3:
                 )
         else:
             st.error("Belum ada data yang diinputkan!")
-            
+        
