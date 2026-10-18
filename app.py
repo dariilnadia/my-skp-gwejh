@@ -76,7 +76,7 @@ with tab1:
         col1, col2 = st.columns(2)
         with col1:
             tanggal = st.date_input("Tanggal Kegiatan", datetime.now())
-            waktu = st.selectbox("Waktu/Sesi Siaran", ["SIARAN PAGI", "MENJELANG SORE", "SERGAW MALAM", "NGECAS IMAN", "DOKUMENTASI TEKNIS / PROSES"])
+            waktu = st.selectbox("Waktu/Sesi Siaran", ["SIARAN PAGI", "OBRAS","MENJELANG SORE", "SERGAW MALAM", "NGECAS IMAN", "DOKUMENTASI TEKNIS / PROSES"])
             program = st.text_input("Nama Program / Jenis Kegiatan", placeholder="Contoh: Zona Atensi / OBRAS / Proses Pencarian Narasumber")
         
         with col2:
