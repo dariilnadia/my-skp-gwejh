@@ -25,6 +25,13 @@ st.markdown("""
     }
     .stButton>button:hover { background-color: #0d47a1; color: white; }
     h3 { color: #0d47a1 !important; }
+    
+    /* MEMBUAT TEKS MENU TAB JELAS & BERWARNA BIRU */
+    .stTabs [data-baseweb="tab"] p {
+        color: #0d47a1 !important;
+        font-weight: bold !important;
+        font-size: 16px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -105,10 +112,10 @@ with tab1:
                 "PROSES PENCARIAN NARASUMBER",
                 "PROSES MEMBUAT RANGKUMAN LIVE"
             ])
-            program = st.text_input("Nama Program", placeholder="Contoh: Zona Atensi / Obras")
+            program = st.text_input("Nama Program", placeholder="Contoh: Zona Atensi / Yuk Cari Tau")
         with col2:
-            narasumber = st.text_area("Nama Narasumber / Isi Materi Harian", placeholder="Isi '-' jika Obras/Materi tanpa narasumber")
-            tema = st.text_area("Tema / Judul Pembahasan / Topik Berita", placeholder="Contoh: Siaga Darurat Bencana")
+            narasumber = st.text_area("Narasumber / Materi Harian", placeholder="Isi materi jika Obras/tanpa narasumber")
+            tema = st.text_area("Tema / Berita", placeholder="Contoh: Pemprov Banten Gelar Mudik Gratis / Berita Harian")
         
         uploaded_file = st.file_uploader("Upload Foto Dokumentasi (PNG/JPG)", type=["jpg", "jpeg", "png"])
         submit = st.form_submit_button("💾 Simpan Eviden")
@@ -212,21 +219,28 @@ with tab3:
             skp_table.alignment = WD_TABLE_ALIGNMENT.CENTER
             set_table_borders(skp_table)
             
+            col_widths = [Inches(0.5), Inches(1.2), Inches(1.5), Inches(1.8), Inches(1.8)]
+            
             hdr_cells = skp_table.rows[0].cells
-            headers = ['NO', 'HARI/TANGGAL', 'NAMA PROGRAM', 'NARASUMBER / MATERI', 'TEMA / TOPIK']
+            headers = ['NO', 'HARI/TANGGAL', 'NAMA PROGRAM', 'NARASUMBER / MATERI', 'TEMA / BERITA']
             for i, h in enumerate(headers):
                 hdr_cells[i].text = h
+                hdr_cells[i].width = col_widths[i]
                 p = hdr_cells[i].paragraphs[0]
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
                 for r in p.runs: r.font.bold = True; r.font.size = Pt(10)
             
             for idx, row in df_data.reset_index().iterrows():
                 row_cells = skp_table.add_row().cells
+                
                 row_cells[0].text = str(idx + 1)
                 row_cells[1].text = str(row['Tanggal'])
-                row_cells[2].text = f"{row['Program']}\n({row['Waktu']})"
-                row_cells[3].text = str(row['Narasumber'])
-                row_cells[4].text = str(row['Tema'])
+                row_cells[2].text = f"{row['Program']}\n({row['Waktu']})" if pd.notna(row['Program']) else str(row['Waktu'])
+                row_cells[3].text = str(row['Narasumber']) if pd.notna(row['Narasumber']) else "-"
+                row_cells[4].text = str(row['Tema']) if pd.notna(row['Tema']) else "-"
+                
+                for i in range(5):
+                    row_cells[i].width = col_widths[i]
                 
                 row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
                 row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -242,4 +256,4 @@ with tab3:
                 )
         else:
             st.error("Belum ada data yang diinputkan!")
-        
+            
