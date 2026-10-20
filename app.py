@@ -11,6 +11,7 @@ from docx.oxml.ns import nsdecls, qn
 
 st.set_page_config(page_title="SKP & Eviden - Serang Gawe FM", page_icon="🎙️", layout="wide")
 
+# CSS KUSTOM UNTUK MEMBUAT MENU NAVIGASI JELAS & TIDAK PUDAR
 st.markdown("""
     <style>
     .stApp { background-color: #f4f7fc; }
@@ -26,10 +27,17 @@ st.markdown("""
     .stButton>button:hover { background-color: #0d47a1; color: white; }
     h3 { color: #0d47a1 !important; }
     
-    button[data-baseweb="tab"] div p {
+    /* MEMBUAT PILIHAN MENU/RADIO BUTTON JELAS TERLIHAT */
+    .stRadio [role="radiogroup"] {
+        background-color: #e3f2fd;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #1565c0;
+    }
+    .stRadio label p {
         color: #0d47a1 !important;
-        font-weight: 700 !important;
-        font-size: 16px !important;
+        font-weight: bold !important;
+        font-size: 15px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -93,9 +101,16 @@ def set_table_borders(table):
     )
     tblPr.append(borders)
 
-tab1, tab2, tab3 = st.tabs(["📝 Input Eviden Harian", "📊 Rekap Data Bulanan", "📄 Generate Laporan SKP"])
+# MENU UTAMA MENGGUNAKAN TOMBOL RADIO YANG JELAS TERLIHAT
+menu_pilihan = st.radio(
+    "Pilih Menu Navigasi:", 
+    ["📝 Input Eviden Harian", "📊 Rekap Data Bulanan", "📄 Generate Laporan SKP"],
+    horizontal=True
+)
 
-with tab1:
+st.markdown("---")
+
+if menu_pilihan == "📝 Input Eviden Harian":
     st.markdown(f"### 📌 Form Input Kegiatan Harian: {nama_pegawai_input.upper()}")
     
     with st.form("form_eviden", clear_on_submit=True):
@@ -139,18 +154,18 @@ with tab1:
             else:
                 st.error("⚠️ Harap upload foto bukti dokumentasi!")
 
-with tab2:
+elif menu_pilihan == "📊 Rekap Data Bulanan":
     st.markdown(f"### 📋 Rekapitulasi Data: {nama_pegawai_input.upper()}")
     if not df_data.empty:
         st.dataframe(df_data[["Tanggal", "Waktu", "Program", "Narasumber", "Tema"]], use_container_width=True)
     else:
         st.info("Belum ada data yang diinputkan.")
 
-with tab3:
+elif menu_pilihan == "📄 Generate Laporan SKP":
     st.markdown("### 🖨️ Cetak Laporan Bulanan (Format Presisi Kotak & Tabel)")
     bulan_tahun = st.text_input("Bulan & Tahun Laporan", value="JANUARI 2026")
     
-    if st.button("🚀 Buat Laporan Word (.docx) Otomatis"):
+    if st.button("🚀 Buat Laporan Dokumen Otomatis"):
         if not df_data.empty:
             doc = Document()
             
@@ -171,12 +186,11 @@ with tab3:
             run_h = p_head.add_run(f"DOKUMENTASI {bulan_tahun.upper()}\n")
             run_h.font.bold = True; run_h.font.size = Pt(14)
             
-            # TEKS PENGANTAR OTOMATIS BERUBAH BULANNYA & RATA KIRI-KANAN (JUSTIFIED)
             p_narrative = doc.add_paragraph(
                 f"Keberhasilan pelaksanaan kegiatan sosialisasi kepada masyarakat di wilayah Kabupaten Serang pada bulan {bulan_tahun.title()} tidak terlepas dari alur persiapan dan koordinasi intensif yang dilakukan di balik layar. Seluruh dokumen dan foto yang dilampirkan dalam bagian ini merupakan rekapitulasi dari peran operasional teknis yang telah dilaksanakan secara berkesinambungan.\n\n"
                 f"Evidence pada periode {bulan_tahun.title()} ini mencakup aktivitas riset dan komunikasi dalam menjaring narasumber yang relevan, pengelolaan administratif, hingga dukungan operasional teknis acara. Penulisan dan penyampaian eviden ini disusun untuk memberikan gambaran utuh mengenai kontribusi nyata serta realisasi sasaran kinerja pegawai pada periode ini."
             )
-            p_narrative.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY  # RATA KIRI-KANAN
+            p_narrative.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p_narrative.paragraph_format.line_spacing = 1.15
             p_narrative.paragraph_format.space_after = Pt(14)
             
@@ -251,10 +265,9 @@ with tab3:
             
             with open(file_output, "rb") as fp:
                 st.download_button(
-                    label="📥 Unduh File Laporan Word (.docx)",
+                    label="📥 Unduh File Laporan (.docx)",
                     data=fp, file_name=file_output,
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
         else:
             st.error("Belum ada data yang diinputkan!")
-            
