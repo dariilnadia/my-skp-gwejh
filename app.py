@@ -11,7 +11,6 @@ from docx.oxml.ns import nsdecls, qn
 
 st.set_page_config(page_title="SKP & Eviden - Serang Gawe FM", page_icon="🎙️", layout="wide")
 
-# CSS PAKSA WARNA TAB JADI BIRU JELAS
 st.markdown("""
     <style>
     .stApp { background-color: #f4f7fc; }
@@ -27,7 +26,6 @@ st.markdown("""
     .stButton>button:hover { background-color: #0d47a1; color: white; }
     h3 { color: #0d47a1 !important; }
     
-    /* PAKSA SEMUA TEKS DALAM TAB JADI BIRU TUA & TEBAL */
     button[data-baseweb="tab"] div p {
         color: #0d47a1 !important;
         font-weight: 700 !important;
@@ -173,10 +171,12 @@ with tab3:
             run_h = p_head.add_run(f"DOKUMENTASI {bulan_tahun.upper()}\n")
             run_h.font.bold = True; run_h.font.size = Pt(14)
             
+            # TEKS PENGANTAR OTOMATIS BERUBAH BULANNYA & RATA KIRI-KANAN (JUSTIFIED)
             p_narrative = doc.add_paragraph(
-                "Keberhasilan pelaksanaan kegiatan sosialisasi kepada masyarakat di wilayah Kabupaten Serang tidak terlepas dari alur persiapan dan koordinasi intensif yang dilakukan di balik layar. Seluruh dokumen dan foto yang dilampirkan dalam bagian ini merupakan rekapitulasi dari peran operasional teknis yang telah dilaksanakan secara berkesinambungan.\n\n"
-                "Evidence ini mencakup aktivitas riset dan komunikasi dalam menjaring narasumber yang relevan, pengelolaan administratif, hingga dukungan operasional teknis acara. Penulisan dan penyampaian eviden ini disusun untuk memberikan gambaran utuh mengenai kontribusi nyata serta realisasi sasaran kinerja pegawai pada periode ini.\n"
+                f"Keberhasilan pelaksanaan kegiatan sosialisasi kepada masyarakat di wilayah Kabupaten Serang pada bulan {bulan_tahun.title()} tidak terlepas dari alur persiapan dan koordinasi intensif yang dilakukan di balik layar. Seluruh dokumen dan foto yang dilampirkan dalam bagian ini merupakan rekapitulasi dari peran operasional teknis yang telah dilaksanakan secara berkesinambungan.\n\n"
+                f"Evidence pada periode {bulan_tahun.title()} ini mencakup aktivitas riset dan komunikasi dalam menjaring narasumber yang relevan, pengelolaan administratif, hingga dukungan operasional teknis acara. Penulisan dan penyampaian eviden ini disusun untuk memberikan gambaran utuh mengenai kontribusi nyata serta realisasi sasaran kinerja pegawai pada periode ini."
             )
+            p_narrative.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY  # RATA KIRI-KANAN
             p_narrative.paragraph_format.line_spacing = 1.15
             p_narrative.paragraph_format.space_after = Pt(14)
             
@@ -257,4 +257,4 @@ with tab3:
                 )
         else:
             st.error("Belum ada data yang diinputkan!")
-        
+            
